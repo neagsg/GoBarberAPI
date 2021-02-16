@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import multer from 'multer';
-import CreateUserService from '../services/CreateUserService';
+import CreateUserService from '@modules/users/services/CreateUserService';
+import multerConfig from '@config/upload';
+import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
-import multerConfig from '../config/upload';
-import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
+
+interface UserProps {
+  password?: string;
+}
 
 const usersRouter = Router();
 
@@ -14,7 +18,7 @@ usersRouter.post('/', async (request, response) => {
     const { name, email, password } = request.body;
     const createUser = new CreateUserService();
 
-    const user = await createUser.execute({
+    const user: UserProps = await createUser.execute({
       name,
       email,
       password,
@@ -35,7 +39,7 @@ usersRouter.patch(
   async (request, response) => {
     try {
       const updateUserAvatar = new UpdateUserAvatarService();
-      const user = await updateUserAvatar.execute({
+      const user: UserProps = await updateUserAvatar.execute({
         user_id: request.user.id,
         avatarFileName: request.file.filename,
       });
